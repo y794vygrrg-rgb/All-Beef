@@ -313,3 +313,50 @@ footer b{color:var(--accent2)}
   .lineage-card{max-width:570px}
   .tree-canvas{margin-left:-4px;margin-right:-4px}
 }
+
+
+/* =========================================================
+   V4.1 — ALL-BEEF MEAT / GYM VISUAL PACK
+   Decorative only. No scoring, valuation, grading or lineage logic changed.
+   ========================================================= */
+:root{--iron:#8f8175;--steak:#a94f35;--char:#090706}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.16;background-image:repeating-linear-gradient(115deg,transparent 0 46px,rgba(255,255,255,.018) 47px 48px),radial-gradient(circle at 90% 10%,rgba(169,79,53,.25),transparent 25rem)}
+.topbar{position:relative}
+.topbar:after{content:"";position:absolute;left:0;right:0;bottom:5px;height:2px;background:linear-gradient(90deg,transparent,#60412b 18%,#d17b38 50%,#60412b 82%,transparent)}
+.brand-mark{position:relative;overflow:visible;border:1px solid #cf7837;box-shadow:0 10px 30px rgba(0,0,0,.4),inset 0 0 0 2px rgba(255,218,160,.12)}
+.brand-mark span{font-size:14px}.brand-mark small{position:absolute;right:-8px;bottom:-7px;font-size:17px;filter:drop-shadow(0 3px 3px #000)}
+.beef-ticker{display:flex;align-items:center;justify-content:center;gap:13px;margin:8px 3px 0;padding:6px 10px;color:#8f7e6f;font-size:8px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;overflow:hidden;white-space:nowrap}
+.beef-ticker i{width:4px;height:4px;border-radius:50%;background:#6e4629}
+.hero{position:relative;overflow:hidden;border-color:#533620}
+.hero:before{content:"";position:absolute;inset:auto -100px -150px auto;width:410px;height:410px;border:42px solid rgba(240,163,58,.035);border-radius:50%;box-shadow:0 0 0 28px rgba(255,255,255,.012)}
+.hero:after{content:"ALL-BEEF • EST. DYNASTY •";position:absolute;right:27px;top:25px;color:rgba(255,209,140,.11);font-size:10px;font-weight:950;letter-spacing:.18em;transform:rotate(3deg)}
+.hero-pump{color:var(--accent);text-shadow:0 0 28px rgba(240,163,58,.18)}
+.beef-copy{display:block;color:#d9b58d;font-size:11px;margin-top:9px;letter-spacing:.04em}
+.hero-logo.beef-plate{position:relative;border:3px solid #87522d;box-shadow:inset 0 0 0 8px #1d120c,inset 0 0 0 11px #5c3824,0 20px 50px rgba(0,0,0,.42)}
+.hero-logo .plate-ring{position:absolute;inset:15px;border:1px dashed rgba(255,209,140,.23);border-radius:50%}
+.barbell{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:106px;height:12px;display:flex;align-items:center}
+.barbell b{height:3px;flex:1;background:#b4a79c;box-shadow:0 1px #4a4039}
+.barbell i{width:17px;height:12px;background:linear-gradient(90deg,#463b34,#a79789,#463b34);border-radius:2px;box-shadow:-6px 0 0 #2d2723,6px 0 0 #2d2723}
+.card{position:relative}
+.card:not(.hero):not(.player-modal-card):before{content:"";position:absolute;left:14px;right:14px;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,205,139,.12),transparent);pointer-events:none}
+.summary-card{transition:transform .18s ease,border-color .18s ease}.summary-card:hover{transform:translateY(-2px);border-color:#67452d}
+.leader-card:nth-child(1):before{content:"🥩";position:absolute;right:15px;top:13px;font-size:22px;opacity:.55}
+.leader-card:nth-child(2):before{content:"🏋️";position:absolute;right:15px;top:13px;font-size:22px;opacity:.55}
+.leader-card:nth-child(3):before{content:"💪";position:absolute;right:15px;top:13px;font-size:22px;opacity:.55}
+.award-card:before{content:"🏆";position:absolute;right:14px;bottom:11px;font-size:32px;opacity:.07}
+.power-row.rank-1{box-shadow:inset 4px 0 0 #f0a33a,var(--shadow)}
+.power-row.rank-1 .power-rank:after{content:" 🥩";font-size:14px}
+.trade-card.graded-card:after{content:"BEEF DEAL";position:absolute;right:13px;bottom:8px;font-size:7px;font-weight:950;letter-spacing:.13em;color:rgba(255,209,140,.13);transform:rotate(-4deg)}
+.team-card .team-open-hint:before{content:"💪 ";filter:grayscale(.15)}
+.draft-card:after{content:"DRAFT GAINS";position:absolute;right:13px;bottom:8px;font-size:7px;font-weight:950;letter-spacing:.13em;color:rgba(255,209,140,.11)}
+.tree-origin:after{content:"⛓️";position:absolute;right:18px;bottom:12px;font-size:28px;opacity:.09}
+.version-pill{background:linear-gradient(180deg,#342014,#1d130d);border-color:#87522d!important;color:#ffd18c!important;box-shadow:inset 0 0 0 1px rgba(255,209,140,.06)}
+.button.primary{box-shadow:0 7px 20px rgba(240,163,58,.13)}
+.tab.active:after{content:"";display:block;height:2px;border-radius:2px;background:var(--accent);margin-top:4px}
+footer:after{content:"🥩  TRAIN • TRADE • REPEAT";font-size:8px;letter-spacing:.12em;color:#715743}
+@media(max-width:800px){
+  .beef-ticker{justify-content:flex-start;overflow:auto;scrollbar-width:none}
+  .hero:after{display:none}
+  .hero-logo.beef-plate{justify-self:center}
+  footer:after{display:block;margin-top:12px}
+}
