@@ -260,3 +260,56 @@ footer b{color:var(--accent2)}
   .weekly-row{grid-template-columns:48px 70px 1fr;padding:9px 8px;gap:7px}
   .detail-section-title{align-items:flex-start}
 }
+
+
+/* =========================================================
+   V4 TRADE TREE OVERHAUL
+   Analytics/grading formulas are unchanged from V3.2.
+   ========================================================= */
+.tree-controls{display:grid;grid-template-columns:1fr 1.5fr .8fr auto;gap:12px;padding:14px;margin-bottom:14px;align-items:end}
+.tree-controls label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.tree-control-actions{display:flex;gap:7px}
+.tree-origin{padding:18px;margin-bottom:14px}
+.origin-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:13px}
+.origin-head h3{font-size:24px}.origin-head p{margin-bottom:0}
+.origin-side{display:grid;grid-template-columns:1fr 44px 1fr;gap:10px;align-items:center}
+.origin-side>div>span{display:block;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.origin-assets{display:flex;gap:6px;flex-wrap:wrap}
+.origin-arrow{font-size:25px;text-align:center;color:var(--accent)}
+.tree-head-badges{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.tree-card{min-height:500px}
+.tree-canvas{padding:18px 4px 12px;overflow:auto}
+.tree-forest{display:grid;gap:16px;min-width:680px}
+.lineage-node{position:relative}
+.lineage-card{position:relative;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#17110d,#100c09);padding:12px 13px;max-width:680px}
+.lineage-card.live{border-color:#315c48;box-shadow:inset 3px 0 0 #4f9d79}
+.lineage-card.spent{border-color:#60402d}
+.lineage-card.converted{border-color:#6c551f;box-shadow:inset 3px 0 0 #b58a37}
+.lineage-card.closed{opacity:.72}
+.lineage-card-top{display:grid;grid-template-columns:38px 1fr auto 34px;gap:10px;align-items:center}
+.asset-icon{width:34px;height:34px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;background:#211811;color:var(--accent2);font-weight:950}
+.lineage-main{min-width:0}.lineage-main .asset-type{display:block;font-size:8px}.lineage-main strong{display:block;font-size:13px;margin-top:2px}.lineage-main small{display:block;color:var(--muted);font-size:10px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lineage-value{text-align:right}.lineage-value span,.lineage-value strong{display:block}.lineage-value span{font-size:8px;color:var(--muted);text-transform:uppercase}.lineage-value strong{font-size:17px;color:var(--accent2);margin-top:2px}
+.branch-toggle{width:32px;height:32px;border:1px solid var(--line);border-radius:9px;background:#1a130e;color:var(--text);font-size:17px}
+.lineage-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:9px 0 0 48px;font-size:9px;color:var(--muted)}
+.tree-status{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:4px 7px;font-weight:850}
+.tree-status.live{color:#7be2aa;border-color:#315c48;background:#10271d}.tree-status.spent{color:#f2b88d;border-color:#60402d;background:#26170f}.tree-status.converted{color:#f2d282;border-color:#6c551f;background:#2b220c}.tree-status.closed{color:#b7a99c}
+.lineage-children{position:relative;margin-left:34px;padding-left:28px;padding-top:12px;display:grid;gap:12px;border-left:1px solid #4b3525}
+.lineage-children:before{content:"";position:absolute;left:0;top:0;width:24px;border-top:1px solid #4b3525}
+.lineage-children>.lineage-node:before{content:"";position:absolute;left:-28px;top:26px;width:28px;border-top:1px solid #4b3525}
+.tree-ledger{min-width:760px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ledger-row{display:grid;grid-template-columns:2fr .6fr .8fr 1.4fr .6fr;gap:10px;align-items:center;padding:10px 12px;border-top:1px solid var(--line);font-size:10px}
+.ledger-row:first-child{border-top:0}.ledger-head{background:#18110d;color:var(--muted);text-transform:uppercase;font-size:8px;letter-spacing:.06em}
+.ledger-row strong{text-align:right;color:var(--accent2)}.ledger-depth{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+@media(max-width:900px){
+  .tree-controls{grid-template-columns:1fr 1fr}.tree-control-actions{grid-column:1/-1}
+}
+@media(max-width:650px){
+  .tree-controls{grid-template-columns:1fr}
+  .tree-control-actions{grid-column:auto;display:grid;grid-template-columns:1fr 1fr}
+  .origin-side{grid-template-columns:1fr}.origin-arrow{transform:rotate(90deg)}
+  .tree-forest{min-width:590px}
+  .lineage-card{max-width:570px}
+  .tree-canvas{margin-left:-4px;margin-right:-4px}
+}

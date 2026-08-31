@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#0d0906" />
-  <title>All-Beef Dynasty Hub · V3.2</title>
+  <title>All-Beef Dynasty Hub · V4</title>
   <link rel="preconnect" href="https://api.sleeper.app" />
   <link rel="preconnect" href="https://api.sleeper.com" />
   <link rel="preconnect" href="https://sleepercdn.com" />
@@ -17,7 +17,7 @@
       <div class="brand-mark">AB</div>
       <div><div class="eyebrow">ALL-BEEF DYNASTY</div><h1 id="leagueName">Dynasty Hub</h1></div>
     </button>
-    <div class="header-actions"><span class="version-pill">V3.2</span><span class="status-dot"></span><span id="syncText">Loading Sleeper…</span><button id="refreshBtn" class="button ghost">Refresh</button></div>
+    <div class="header-actions"><span class="version-pill">V4</span><span class="status-dot"></span><span id="syncText">Loading Sleeper…</span><button id="refreshBtn" class="button ghost">Refresh</button></div>
   </header>
 
   <nav class="tabs">
@@ -107,14 +107,23 @@
     </section>
 
     <section id="view-trees" class="view">
-      <div class="page-heading"><div><p class="eyebrow">ASSET LINEAGE</p><h2 class="page-h2">Trade Trees</h2></div><span class="badge">V2 tree engine preserved</span></div>
-      <div class="toolbar card"><label><span>Team</span><select id="treeTeamSelect"></select></label><label><span>Starting trade</span><select id="rootTradeSelect"></select></label><div class="toolbar-stat"><span>Branches</span><strong id="branchCount">0</strong></div></div>
-      <div id="treeSummary" class="summary-grid"></div>
-      <div class="card tree-card"><div class="section-title-row"><div><p class="eyebrow">TREE VIEW</p><h3 id="treeTitle">Choose a team</h3></div><span class="badge" id="treeDate"></span></div><div id="treeCanvas" class="tree-canvas"><div class="empty">Trade data is loading.</div></div></div>
+      <div class="page-heading"><div><p class="eyebrow">FRANCHISE ASSET LINEAGE</p><h2 class="page-h2">Trade Trees</h2><p class="muted">Follow every asset received in a trade through future deals, draft-pick conversions and the assets that remain on the roster today.</p></div><span class="badge accent">V4 lineage engine</span></div>
+      <div class="tree-controls card">
+        <label><span>Franchise</span><select id="treeTeamSelect"></select></label>
+        <label><span>Starting trade</span><select id="rootTradeSelect"></select></label>
+        <label><span>View</span><select id="treeViewMode"><option value="visual">Visual tree</option><option value="ledger">Asset ledger</option></select></label>
+        <div class="tree-control-actions"><button id="treeExpandAll" class="button" type="button">Expand all</button><button id="treeCollapseAll" class="button ghost" type="button">Collapse spent branches</button></div>
+      </div>
+      <div id="treeSummary" class="summary-grid four"></div>
+      <div id="treeTradeHeader" class="tree-origin card"></div>
+      <div class="card tree-card">
+        <div class="section-title-row"><div><p class="eyebrow">LINEAGE MAP</p><h3 id="treeTitle">Choose a team</h3></div><div class="tree-head-badges"><span class="badge" id="treeDate"></span><span class="badge" id="branchCount">0 branches</span></div></div>
+        <div id="treeCanvas" class="tree-canvas"><div class="empty">Trade data is loading.</div></div>
+      </div>
     </section>
   </main>
 
-  <footer><span>All-Beef Dynasty · Sleeper league <span id="footerLeague"></span></span><span><b>V3.2</b> · <span id="dataSourceFooter">Sleeper league + NFL fantasy data</span></span></footer>
+  <footer><span>All-Beef Dynasty · Sleeper league <span id="footerLeague"></span></span><span><b>V4</b> · <span id="dataSourceFooter">Sleeper league + NFL fantasy data</span></span></footer>
 </div>
 <div id="playerModal" class="player-modal" aria-hidden="true">
   <div class="player-modal-backdrop" data-close-player></div>

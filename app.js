@@ -2,7 +2,7 @@
 "use strict";
 const CFG=window.TRADE_TREE_CONFIG||{}, LEAGUE_ID=String(CFG.leagueId||""), MAX_WEEKS=Number(CFG.maxTransactionWeeks||18), CACHE_HOURS=Number(CFG.playerCacheHours||24);
 const API="https://api.sleeper.app/v1", DATA_API="https://api.sleeper.com";
-const state={leagueChain:[],seasons:[],usersByLeague:new Map(),rostersByLeague:new Map(),managerMap:new Map(),trades:[],players:{},currentLeague:null,drafts:[],tradedPicks:[],matchups:new Map(),seasonStats:new Map(),projections:{},analytics:[],tradeGrades:new Map(),draftGrades:[],managerGrades:[],dataStatus:{stats:false,projections:false},playerWeeklyCache:new Map(),nflState:null,openTeam:null};
+const state={leagueChain:[],seasons:[],usersByLeague:new Map(),rostersByLeague:new Map(),managerMap:new Map(),trades:[],players:{},currentLeague:null,drafts:[],tradedPicks:[],matchups:new Map(),seasonStats:new Map(),projections:{},analytics:[],tradeGrades:new Map(),draftGrades:[],managerGrades:[],dataStatus:{stats:false,projections:false},playerWeeklyCache:new Map(),nflState:null,openTeam:null,treeCollapsed:new Set(),treeMode:"visual"};
 const $=id=>document.getElementById(id), esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const clamp=(n,a=0,b=100)=>Math.max(a,Math.min(b,n)), avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0, sum=a=>a.reduce((x,y)=>x+y,0);
 async function api(path){const r=await fetch(`${API}${path}`);if(!r.ok)throw new Error(`Sleeper request failed (${r.status})`);return r.json()}
@@ -143,15 +143,156 @@ function renderTrending(){for(const [type,id] of [["add","trendingAdds"],["drop"
 function renderDrafts(){const mgr=$("draftManagerFilter")?.value||"all",year=$("draftYearFilter")?.value||"all";const filtered=state.drafts.filter(x=>year==="all"||String(x.season)===year).map(x=>{if(mgr==="all")return x;const picks=x.picks.filter(p=>String(p.roster_id)===String(mgr));return{...x,picks}}).filter(x=>x.picks.length);$("draftCountBadge").textContent=`${state.drafts.length} drafts`;const classes=[...new Set(filtered.map(d=>String(d.season)))];$("draftResultCount").textContent=filtered.length;$("draftSummary").innerHTML=[["Classes",classes.length],["Picks shown",sum(filtered.map(d=>d.picks.length))],["Filter",mgr==="all"&&year==="all"?"All drafts":`${mgr==="all"?"All managers":teamName(String(state.currentLeague.league_id),mgr)} · ${year==="all"?"All years":year}`]].map(x=>`<div class="summary-card"><span>${x[0]}</span><strong>${esc(x[1])}</strong></div>`).join("");$("draftsList").innerHTML=filtered.length?filtered.map(x=>{const allTgs=state.draftGrades.filter(g=>g.draft.draft.draft_id===x.draft.draft_id),tgs=mgr==="all"?allTgs:allTgs.filter(g=>String(g.rid)===String(mgr));const pickGrade=new Map();allTgs.forEach(t=>t.picks.forEach(pp=>pickGrade.set(String(pp.p.pick_no),pp.g)));return `<article class="draft-card"><div class="section-title-row"><div><p class="eyebrow">${esc(x.season)}</p><h3>${esc(x.draft.metadata?.name||x.draft.type||"Rookie Draft")}</h3></div><span class="badge">${x.picks.length} pick${x.picks.length===1?"":"s"} shown</span></div><div class="draft-team-grades">${tgs.sort((a,b)=>b.score-a.score).map(g=>`<div class="draft-team-grade"><strong>${esc(teamName(x.leagueId,g.rid))}</strong><span class="${gradeClass(g.grade)}">${g.grade}</span></div>`).join("")}</div><div class="draft-picks">${x.picks.slice(0,48).map(p=>{const g=pickGrade.get(String(p.pick_no));return `<div class="draft-pick">${g?`<span class="pick-grade ${gradeClass(g)}">${g}</span>`:""}<strong>${esc(p.pick_no)}. ${esc(p.metadata?.first_name&&p.metadata?.last_name?`${p.metadata.first_name} ${p.metadata.last_name}`:playerName(p.player_id))}</strong><span>${esc(teamName(x.leagueId,p.roster_id))}</span></div>`}).join("")}</div></article>`}).join(""):'<div class="card empty">No draft history matches those filters.</div>'}
 
 function populateControls(){const lid=String(state.currentLeague.league_id);$("treeTeamSelect").innerHTML=currentRosterIds().map(r=>`<option value="${r}">${esc(teamName(lid,r))}</option>`).join("");$("seasonFilter").innerHTML='<option value="all">All seasons</option>'+state.seasons.map(s=>`<option value="${s}">${s}</option>`).join("");$("draftManagerFilter").innerHTML='<option value="all">All managers</option>'+currentRosterIds().map(r=>`<option value="${r}">${esc(teamName(lid,r))}</option>`).join("");const ys=[...new Set(state.drafts.map(d=>String(d.season)))].sort((a,b)=>b-a);$("draftYearFilter").innerHTML='<option value="all">All years</option>'+ys.map(y=>`<option value="${y}">${y}</option>`).join("");populateRootTrades()}
-function populateRootTrades(){const rid=Number($("treeTeamSelect").value),ts=tradesForCurrentRoster(rid);$("rootTradeSelect").innerHTML=ts.map(t=>{const h=resolveHistoricRosterForCurrent(rid,t),rec=assetsReceived(t,h).map(a=>a.label).slice(0,2).join(", ");return `<option value="${t.transaction_id}">${esc(t._season)} · ${esc(fmtDate(t.created))} · ${esc(rec||"Trade")}</option>`}).join("");renderTree()}
-function findNextSpend(key,after,rid){for(const tx of [...state.trades].sort((a,b)=>Number(a.created)-Number(b.created))){if(Number(tx.created)<=Number(after))continue;const h=resolveHistoricRosterForCurrent(rid,tx);if(assetsSent(tx,h).some(a=>a.key===key))return{tx,rid:h}}return null}
-function traceAsset(a,root,rid,d=0,v=new Set()){const k=`${a.key}:${root.transaction_id}`;if(v.has(k)||d>8)return null;v.add(k);const s=findNextSpend(a.key,root.created,rid);if(!s)return{asset:a,status:"held",depth:d,children:[]};return{asset:a,status:"spent",depth:d,spentTx:s.tx,children:assetsReceived(s.tx,s.rid).map(x=>traceAsset(x,s.tx,rid,d+1,new Set(v))).filter(Boolean)}}
-function countNodes(n){return 1+(n.children||[]).reduce((a,c)=>a+countNodes(c),0)}function maxDepth(n){return Math.max(n.depth,...(n.children||[]).map(maxDepth))}
-function nodeHTML(n){return `<div class="tree-level"><div class="tree-trade"><strong>${n.status==="held"?"Still held":"Moved again"}</strong><div class="tree-meta">${n.spentTx?`${esc(n.spentTx._season)} · ${esc(fmtDate(n.spentTx.created))}`:"Current branch endpoint"}</div></div><div class="tree-assets"><div class="asset ${n.status==="held"?"live":"spent"}"><span class="asset-type">${esc(n.asset.type)}</span><strong>${esc(n.asset.label)}</strong><small>${n.status==="held"?"Branch remains open":"Traded away"}</small>${n.children?.length?`<div class="tree-return">Became ${n.children.length} asset${n.children.length===1?"":"s"}</div>`:""}</div>${(n.children||[]).map(nodeHTML).join("")}</div></div>`}
-function renderTree(){const rid=Number($("treeTeamSelect").value),tx=state.trades.find(t=>String(t.transaction_id)===String($("rootTradeSelect").value));if(!tx){$("treeCanvas").innerHTML='<div class="empty">No trade selected.</div>';return}const h=resolveHistoricRosterForCurrent(rid,tx),roots=assetsReceived(tx,h).map(a=>traceAsset(a,tx,rid)).filter(Boolean),nodes=roots.reduce((a,n)=>a+countNodes(n),0),open=roots.reduce((a,n)=>a+(JSON.stringify(n).match(/"status":"held"/g)||[]).length,0);$("branchCount").textContent=roots.length;$("treeTitle").textContent=`${teamName(tx._leagueId,h)} trade tree`;$("treeDate").textContent=fmtDate(tx.created);$("treeSummary").innerHTML=[["Starting assets",roots.length],["Total nodes",nodes],["Open endpoints",open]].map(x=>`<div class="summary-card"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join("");$("treeCanvas").innerHTML=roots.length?roots.map(nodeHTML).join(""):'<div class="empty">No received assets could be mapped for this trade.</div>'}
 
-function nav(view){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===`view-${view}`));document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.view===view));window.scrollTo({top:0,behavior:"smooth"})}
-function bind(){document.querySelectorAll("[data-view]").forEach(x=>x.addEventListener("click",()=>nav(x.dataset.view)));document.querySelectorAll("[data-nav]").forEach(x=>x.addEventListener("click",()=>nav(x.dataset.nav)));$("refreshBtn").addEventListener("click",()=>location.reload());$("tradeSearch").addEventListener("input",renderTrades);$("seasonFilter").addEventListener("change",renderTrades);$("draftManagerFilter").addEventListener("change",renderDrafts);$("draftYearFilter").addEventListener("change",renderDrafts);$("treeTeamSelect").addEventListener("change",populateRootTrades);$("rootTradeSelect").addEventListener("change",renderTree);$("teamsGrid").addEventListener("click",e=>{const p=e.target.closest("[data-player-id]");if(p){e.stopPropagation();openPlayerModal(p.dataset.playerId);return}const t=e.target.closest("[data-team-toggle]");if(t){const rid=Number(t.dataset.teamToggle);state.openTeam=Number(state.openTeam)===rid?null:rid;renderTeams()}});$("playerModal").addEventListener("click",e=>{if(e.target.closest("[data-close-player]"))closePlayerModal()});document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("playerModal").classList.contains("open"))closePlayerModal()})}
+function populateRootTrades(){
+  const rid=Number($("treeTeamSelect").value),ts=tradesForCurrentRoster(rid).sort((a,b)=>Number(b.created)-Number(a.created));
+  $("rootTradeSelect").innerHTML=ts.map(t=>{
+    const h=resolveHistoricRosterForCurrent(rid,t),rec=assetsReceived(t,h).map(a=>a.label).slice(0,2).join(", ");
+    return `<option value="${t.transaction_id}">${esc(t._season)} · ${esc(fmtDate(t.created))} · ${esc(rec||"Trade")}</option>`
+  }).join("");
+  state.treeCollapsed=new Set();
+  renderTree()
+}
+function chronologicalTrades(){return [...state.trades].sort((a,b)=>Number(a.created)-Number(b.created))}
+function findNextSpend(key,after,rid){
+  for(const tx of chronologicalTrades()){
+    if(Number(tx.created)<=Number(after))continue;
+    const h=resolveHistoricRosterForCurrent(rid,tx);
+    if(assetsSent(tx,h).some(a=>a.key===key))return{tx,rid:h}
+  }
+  return null
+}
+function draftForPickAsset(a){
+  if(a.type!=="pick"||!a.pick)return null;
+  const year=String(a.pick.season),round=Number(a.pick.round),original=Number(a.pick.roster_id);
+  const drafts=state.drafts.filter(d=>String(d.season)===year);
+  for(const d of drafts){
+    const originalRoster=(state.rostersByLeague.get(String(d.leagueId))||[]).find(r=>Number(r.roster_id)===original);
+    const owner=String(originalRoster?.owner_id||"");
+    const order=d.draft?.draft_order||{};
+    const slotMap=d.draft?.slot_to_roster_id||{};
+    let slot=Number(order[owner]||0);
+    if(!slot){
+      const entry=Object.entries(slotMap).find(([,rid])=>Number(rid)===original);
+      if(entry)slot=Number(entry[0])
+    }
+    let pick=null;
+    if(slot)pick=d.picks.find(p=>Number(p.round)===round&&Number(p.draft_slot)===slot);
+    if(!pick)pick=d.picks.find(p=>Number(p.round)===round&&Number(p.roster_id)===original);
+    if(pick?.player_id){
+      const when=Number(d.draft?.start_time||d.draft?.created||0);
+      return{draft:d,pick,playerAsset:{key:`player:${pick.player_id}`,type:"player",label:playerName(pick.player_id),pid:String(pick.player_id),from:null,to:null},when}
+    }
+  }
+  return null
+}
+function currentHolderForAsset(a){
+  if(a.type==="player"){
+    const roster=(state.rostersByLeague.get(String(state.currentLeague.league_id))||[]).find(r=>(r.players||[]).map(String).includes(String(a.pid)));
+    return roster?{rid:Number(roster.roster_id),team:teamName(String(state.currentLeague.league_id),roster.roster_id)}:null
+  }
+  if(a.type==="pick"&&a.pick&&Number(a.pick.season)>Number(state.currentLeague.season)){
+    const moved=state.tradedPicks.find(p=>Number(p.season)===Number(a.pick.season)&&Number(p.round)===Number(a.pick.round)&&Number(p.roster_id)===Number(a.pick.roster_id));
+    const rid=Number(moved?.owner_id??a.pick.owner_id??a.pick.roster_id);
+    return{rid,team:teamName(String(state.currentLeague.league_id),rid)}
+  }
+  return null
+}
+function traceAsset(a,root,rid,d=0,v=new Set()){
+  const visit=`${a.key}:${root.transaction_id||root.created||0}:${d}`;
+  if(v.has(visit)||d>12)return null;
+  v.add(visit);
+  const spend=findNextSpend(a.key,root.created||0,rid);
+  const conversion=draftForPickAsset(a);
+  if(conversion&&(!spend||Number(conversion.when||0)<Number(spend.tx.created))){
+    const synthetic={transaction_id:`draft:${conversion.draft.draft.draft_id}:${conversion.pick.pick_no}`,created:conversion.when||Number(root.created)+1,_season:String(a.pick.season),_leagueId:String(conversion.draft.leagueId),_kind:"draft",_draft:conversion.draft,_pick:conversion.pick};
+    const child=traceAsset(conversion.playerAsset,synthetic,rid,d+1,new Set(v));
+    return{asset:a,status:"converted",depth:d,conversion,spentTx:synthetic,children:child?[child]:[]}
+  }
+  if(!spend){
+    const holder=currentHolderForAsset(a);
+    return{asset:a,status:holder?"held":"closed",depth:d,holder,children:[]}
+  }
+  return{asset:a,status:"spent",depth:d,spentTx:spend.tx,children:assetsReceived(spend.tx,spend.rid).map(x=>traceAsset(x,spend.tx,rid,d+1,new Set(v))).filter(Boolean)}
+}
+function flattenTree(nodes,out=[],parent=null){
+  for(const n of nodes){out.push({node:n,parent});flattenTree(n.children||[],out,n)}
+  return out
+}
+function countNodes(n){return 1+(n.children||[]).reduce((a,c)=>a+countNodes(c),0)}
+function maxDepth(n){return Math.max(n.depth,...(n.children||[]).map(maxDepth))}
+function endpointCount(n){return(n.children||[]).length?(n.children||[]).reduce((a,c)=>a+endpointCount(c),0):1}
+function liveEndpointCount(n){return(n.children||[]).length?(n.children||[]).reduce((a,c)=>a+liveEndpointCount(c),0):(n.status==="held"?1:0)}
+function lineageValue(n){
+  if(!(n.children||[]).length)return n.status==="held"?assetValue(n.asset):0;
+  return(n.children||[]).reduce((a,c)=>a+lineageValue(c),0)
+}
+function statusLabel(n){return n.status==="held"?"Still owned":n.status==="spent"?"Traded again":n.status==="converted"?"Drafted into player":"No longer mapped"}
+function statusClass(n){return n.status==="held"?"live":n.status==="spent"?"spent":n.status==="converted"?"converted":"closed"}
+function assetIcon(a){return a.type==="player"?"P":a.type==="pick"?"#":"$"}
+function txPartnerLabel(tx,rid){
+  if(tx?._kind==="draft")return"Rookie Draft";
+  const others=(tx?.roster_ids||[]).filter(x=>Number(x)!==Number(rid));
+  return others.map(x=>teamName(String(tx._leagueId),x)).join(" + ")||"Trade"
+}
+function branchId(n){return `${n.asset.key}|${n.spentTx?.transaction_id||"end"}|${n.depth}`}
+function nodeHTML(n,rid){
+  const bid=branchId(n),collapsed=state.treeCollapsed.has(bid),hasKids=(n.children||[]).length>0;
+  const event=n.status==="converted"?`${n.asset.label} became ${n.conversion?.playerAsset?.label||"a player"}`:n.status==="spent"?`Sent in deal with ${txPartnerLabel(n.spentTx,resolveHistoricRosterForCurrent(rid,n.spentTx))}`:n.holder?`Currently on ${n.holder.team}`:"Branch endpoint";
+  const value=Math.round(n.status==="held"?assetValue(n.asset):lineageValue(n));
+  return `<div class="lineage-node depth-${n.depth}">
+    <div class="lineage-rail"><span></span></div>
+    <article class="lineage-card ${statusClass(n)}">
+      <div class="lineage-card-top">
+        <div class="asset-icon">${assetIcon(n.asset)}</div>
+        <div class="lineage-main"><span class="asset-type">${esc(n.asset.type)}</span><strong>${esc(n.asset.label)}</strong><small>${esc(event)}</small></div>
+        <div class="lineage-value"><span>Live value</span><strong>${value}</strong></div>
+        ${hasKids?`<button type="button" class="branch-toggle" data-branch-toggle="${esc(bid)}" aria-expanded="${!collapsed}">${collapsed?"＋":"−"}</button>`:""}
+      </div>
+      <div class="lineage-meta"><span class="tree-status ${statusClass(n)}">${statusLabel(n)}</span>${n.spentTx?`<span>${esc(n.spentTx._season)} · ${esc(fmtDate(n.spentTx.created))}</span>`:""}${hasKids?`<span>${n.children.length} return asset${n.children.length===1?"":"s"}</span>`:""}</div>
+    </article>
+    ${hasKids&&!collapsed?`<div class="lineage-children">${n.children.map(c=>nodeHTML(c,rid)).join("")}</div>`:""}
+  </div>`
+}
+function tradeSideSummary(tx,rid){
+  const got=assetsReceived(tx,rid),sent=assetsSent(tx,rid);
+  const pills=a=>a.length?a.map(x=>`<span class="chip ${x.type==="pick"?"pick":""}">${esc(x.label)}</span>`).join(""):'<span class="muted">None mapped</span>';
+  return `<div class="origin-side"><div><span>Sent</span><div class="origin-assets">${pills(sent)}</div></div><div class="origin-arrow">→</div><div><span>Received</span><div class="origin-assets">${pills(got)}</div></div></div>`
+}
+function treeLedgerHTML(roots){
+  const rows=flattenTree(roots).map(({node:n})=>{
+    const event=n.status==="converted"?`Drafted ${n.conversion?.playerAsset?.label||""}`:n.status==="spent"?`Traded ${fmtDate(n.spentTx?.created)}`:n.holder?`Held by ${n.holder.team}`:"Closed";
+    return `<div class="ledger-row"><span class="ledger-depth">${"↳ ".repeat(Math.min(n.depth,4))}${esc(n.asset.label)}</span><span>${esc(n.asset.type)}</span><span class="tree-status ${statusClass(n)}">${statusLabel(n)}</span><span>${esc(event)}</span><strong>${Math.round(n.status==="held"?assetValue(n.asset):lineageValue(n))}</strong></div>`
+  }).join("");
+  return `<div class="tree-ledger"><div class="ledger-row ledger-head"><span>Asset</span><span>Type</span><span>Status</span><span>Event / holder</span><strong>Live value</strong></div>${rows}</div>`
+}
+function renderTree(){
+  const rid=Number($("treeTeamSelect").value),tx=state.trades.find(t=>String(t.transaction_id)===String($("rootTradeSelect").value));
+  if(!tx){$("treeTradeHeader").innerHTML="";$("treeCanvas").innerHTML='<div class="empty">No trade selected.</div>';return}
+  const h=resolveHistoricRosterForCurrent(rid,tx),roots=assetsReceived(tx,h).map(a=>traceAsset(a,tx,rid)).filter(Boolean);
+  const flat=flattenTree(roots),nodes=flat.length,live=flat.filter(x=>x.node.status==="held").length,depth=roots.length?Math.max(...roots.map(maxDepth)):0,liveVal=Math.round(roots.reduce((a,n)=>a+lineageValue(n),0));
+  $("branchCount").textContent=`${roots.length} branch${roots.length===1?"":"es"}`;
+  $("treeTitle").textContent=`${teamName(tx._leagueId,h)} trade tree`;
+  $("treeDate").textContent=fmtDate(tx.created);
+  $("treeSummary").innerHTML=[["Starting assets",roots.length],["Lineage nodes",nodes],["Live endpoints",live],["Live branch value",liveVal]].map(x=>`<div class="summary-card"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join("");
+  $("treeTradeHeader").innerHTML=`<div class="origin-head"><div><p class="eyebrow">ROOT TRANSACTION · ${esc(tx._season)}</p><h3>${esc(teamName(tx._leagueId,h))}</h3><p class="muted">${esc(fmtDate(tx.created))}</p></div><span class="badge accent">${(tx.roster_ids||[]).length}-team trade</span></div>${tradeSideSummary(tx,h)}`;
+  const mode=$("treeViewMode")?.value||"visual";state.treeMode=mode;
+  $("treeCanvas").innerHTML=!roots.length?'<div class="empty">No received assets could be mapped for this trade.</div>':mode==="ledger"?treeLedgerHTML(roots):`<div class="tree-forest">${roots.map(n=>nodeHTML(n,rid)).join("")}</div>`;
+}
+function toggleTreeBranch(id){
+  if(state.treeCollapsed.has(id))state.treeCollapsed.delete(id);else state.treeCollapsed.add(id);
+  renderTree()
+}
+function setAllBranches(collapsed){
+  state.treeCollapsed=new Set();
+  if(collapsed){
+    const rid=Number($("treeTeamSelect").value),tx=state.trades.find(t=>String(t.transaction_id)===String($("rootTradeSelect").value));
+    if(tx){const h=resolveHistoricRosterForCurrent(rid,tx),roots=assetsReceived(tx,h).map(a=>traceAsset(a,tx,rid)).filter(Boolean);flattenTree(roots).forEach(({node:n})=>{if((n.children||[]).length)state.treeCollapsed.add(branchId(n))})}
+  }
+  renderTree()
+}
+
+function bind(){document.querySelectorAll("[data-view]").forEach(x=>x.addEventListener("click",()=>nav(x.dataset.view)));document.querySelectorAll("[data-nav]").forEach(x=>x.addEventListener("click",()=>nav(x.dataset.nav)));$("refreshBtn").addEventListener("click",()=>location.reload());$("tradeSearch").addEventListener("input",renderTrades);$("seasonFilter").addEventListener("change",renderTrades);$("draftManagerFilter").addEventListener("change",renderDrafts);$("draftYearFilter").addEventListener("change",renderDrafts);$("treeTeamSelect").addEventListener("change",populateRootTrades);$("rootTradeSelect").addEventListener("change",()=>{state.treeCollapsed=new Set();renderTree()});$("treeViewMode").addEventListener("change",renderTree);$("treeExpandAll").addEventListener("click",()=>setAllBranches(false));$("treeCollapseAll").addEventListener("click",()=>setAllBranches(true));$("treeCanvas").addEventListener("click",e=>{const b=e.target.closest("[data-branch-toggle]");if(b)toggleTreeBranch(b.dataset.branchToggle)});$("teamsGrid").addEventListener("click",e=>{const p=e.target.closest("[data-player-id]");if(p){e.stopPropagation();openPlayerModal(p.dataset.playerId);return}const t=e.target.closest("[data-team-toggle]");if(t){const rid=Number(t.dataset.teamToggle);state.openTeam=Number(state.openTeam)===rid?null:rid;renderTeams()}});$("playerModal").addEventListener("click",e=>{if(e.target.closest("[data-close-player]"))closePlayerModal()});document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("playerModal").classList.contains("open"))closePlayerModal()})}
 async function init(){try{$("leagueIdLabel").textContent=LEAGUE_ID;$("footerLeague").textContent=LEAGUE_ID;await loadLeagueChain();$("leagueName").textContent=state.currentLeague.name||"All-Beef Dynasty";$("syncText").textContent="Loading league history…";await Promise.all([loadPeople(),loadTrades(),loadPlayers(),loadCurrentExtras()]);$("syncText").textContent="Loading NFL data…";await Promise.all([loadNFLData(),loadDrafts()]);buildAnalytics();buildTradeGrades();buildDraftGrades();buildManagerGrades();populateControls();renderHome();renderPower();renderTeams();renderTrades();renderDrafts();renderManagers();renderAwards();renderTrending();$("tradesBadge").textContent=`${state.trades.length} trades`;$("teamsBadge").textContent=`${currentRosterIds().length} teams`;$("syncText").textContent=`Synced · ${state.currentLeague.season}`;$("dataSourceFooter").textContent=`Sleeper league + live ${state.currentLeague.season} regular-season NFL stats + ${state.dataStatus.projections?"projections + ":""}historical fantasy stats`;bind()}catch(e){console.error(e);$("syncText").textContent="Sync failed";toast(e.message||"Unable to load league")}}
 init();
 })();
