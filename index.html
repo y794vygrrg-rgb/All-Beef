@@ -4,79 +4,114 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#0d0906" />
-  <title>All-Beef Dynasty Trade Tree</title>
+  <title>All-Beef Dynasty Hub</title>
   <link rel="preconnect" href="https://api.sleeper.app" />
+  <link rel="preconnect" href="https://api.sleeper.com" />
   <link rel="preconnect" href="https://sleepercdn.com" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div class="shell">
-    <header class="topbar">
-      <button class="brand" data-nav="home">
-        <div class="brand-mark">AB</div>
-        <div><div class="eyebrow">ALL-BEEF DYNASTY</div><h1 id="leagueName">Dynasty Trade Tree</h1></div>
-      </button>
-      <div class="header-actions"><span class="status-dot"></span><span id="syncText">Loading Sleeper…</span><button id="refreshBtn" class="button ghost">Refresh</button></div>
-    </header>
+<div class="shell">
+  <header class="topbar">
+    <button class="brand" data-nav="home">
+      <div class="brand-mark">AB</div>
+      <div><div class="eyebrow">ALL-BEEF DYNASTY</div><h1 id="leagueName">Dynasty Hub</h1></div>
+    </button>
+    <div class="header-actions"><span class="status-dot"></span><span id="syncText">Loading Sleeper…</span><button id="refreshBtn" class="button ghost">Refresh</button></div>
+  </header>
 
-    <nav class="tabs">
-      <button class="tab active" data-view="home">Home</button>
-      <button class="tab" data-view="trades">Trades</button>
-      <button class="tab" data-view="trending">Trending</button>
-      <button class="tab" data-view="drafts">Drafts</button>
-      <button class="tab" data-view="trees">Trees</button>
-      <button class="tab" data-view="teams">Teams</button>
-    </nav>
+  <nav class="tabs">
+    <button class="tab active" data-view="home">Home</button>
+    <button class="tab" data-view="power">Power</button>
+    <button class="tab" data-view="teams">Teams</button>
+    <button class="tab" data-view="trades">Trades</button>
+    <button class="tab" data-view="drafts">Drafts</button>
+    <button class="tab" data-view="grades">Grades</button>
+    <button class="tab" data-view="awards">Awards</button>
+    <button class="tab" data-view="trending">Trending</button>
+    <button class="tab" data-view="trees">Trees</button>
+  </nav>
 
-    <main>
-      <section id="view-home" class="view active">
-        <section class="hero card">
-          <div>
-            <p class="eyebrow">LEAGUE <span id="leagueIdLabel"></span></p>
-            <h2>Every deal leaves a trail.</h2>
-            <p class="muted hero-copy">Track trades, draft capital, player movement and the branches created when one dynasty asset becomes another.</p>
-            <div class="hero-actions"><button class="button primary" data-nav="trees">Explore trade trees</button><button class="button" data-nav="trades">Browse all trades</button></div>
+  <main>
+    <section id="view-home" class="view active">
+      <section class="hero card">
+        <div>
+          <p class="eyebrow">ALL-BEEF INTELLIGENCE · <span id="leagueIdLabel"></span></p>
+          <h2>Where the beef gets built.</h2>
+          <p class="muted hero-copy">Live league intelligence built from Sleeper rosters, transactions, drafts, NFL player data, projections and historical fantasy production.</p>
+          <div class="hero-actions">
+            <button class="button primary" data-nav="power">View power rankings</button>
+            <button class="button" data-nav="grades">Manager grades</button>
           </div>
-          <div class="hero-logo"><span>ALL</span><strong>BEEF</strong><small>DYNASTY</small></div>
-        </section>
-        <div id="homeStats" class="summary-grid four"></div>
-        <div class="home-grid">
-          <section class="card panel-pad"><div class="section-title-row"><div><p class="eyebrow">LATEST ACTIVITY</p><h3>Recent trades</h3></div><button class="link-button" data-nav="trades">View all</button></div><div id="recentTrades" class="compact-list"></div></section>
-          <section class="card panel-pad"><div class="section-title-row"><div><p class="eyebrow">LEAGUE PULSE</p><h3>Most active teams</h3></div></div><div id="activeTeams" class="compact-list"></div></section>
         </div>
+        <div class="hero-logo"><span>ALL</span><strong>BEEF</strong><small>DYNASTY HUB</small></div>
       </section>
 
-      <section id="view-trades" class="view">
-        <div class="page-heading"><div><p class="eyebrow">TRANSACTION ARCHIVE</p><h2 class="page-h2">Trades</h2></div><span class="badge accent" id="tradesBadge">— trades</span></div>
-        <div class="toolbar card"><label><span>Search</span><input id="tradeSearch" type="search" placeholder="Player, pick, or team…" /></label><label><span>Season</span><select id="seasonFilter"><option value="all">All seasons</option></select></label><div class="toolbar-stat"><span>Showing</span><strong id="tradeResultCount">0</strong></div></div>
-        <div id="tradeList" class="trade-list"></div>
-      </section>
+      <div id="homeLeaders" class="leader-grid"></div>
+      <div id="homeStats" class="summary-grid four"></div>
 
-      <section id="view-trending" class="view">
-        <div class="page-heading"><div><p class="eyebrow">SLEEPER MARKET</p><h2 class="page-h2">Trending</h2></div><span class="badge">24-hour activity</span></div>
-        <div class="trend-grid"><section class="card panel-pad"><p class="eyebrow green">RISERS</p><h3>Most added</h3><div id="trendingAdds" class="rank-list"></div></section><section class="card panel-pad"><p class="eyebrow red">FALLERS</p><h3>Most dropped</h3><div id="trendingDrops" class="rank-list"></div></section></div>
-      </section>
+      <div class="home-grid">
+        <section class="card panel-pad">
+          <div class="section-title-row"><div><p class="eyebrow">POWER BOARD</p><h3>Top contenders</h3></div><button class="link-button" data-nav="power">Full rankings</button></div>
+          <div id="homePower" class="compact-list"></div>
+        </section>
+        <section class="card panel-pad">
+          <div class="section-title-row"><div><p class="eyebrow">LEAGUE PULSE</p><h3>Latest graded trades</h3></div><button class="link-button" data-nav="trades">All trades</button></div>
+          <div id="recentTrades" class="compact-list"></div>
+        </section>
+      </div>
+    </section>
 
-      <section id="view-drafts" class="view">
-        <div class="page-heading"><div><p class="eyebrow">ROOKIE HISTORY</p><h2 class="page-h2">Drafts</h2></div><span class="badge" id="draftCountBadge">— drafts</span></div>
-        <div id="draftsList" class="drafts-list"></div>
-      </section>
+    <section id="view-power" class="view">
+      <div class="page-heading"><div><p class="eyebrow">LIVE LEAGUE MODEL</p><h2 class="page-h2">Power Rankings</h2><p class="muted">Roster strength + production + dynasty value + depth + future capital.</p></div><span class="badge accent" id="powerDataBadge">Model loading</span></div>
+      <div class="model-note card"><strong>Power Score</strong><span>35% lineup · 20% depth · 20% dynasty value · 15% production · 10% draft capital. All components are normalized within this league.</span></div>
+      <div id="powerRankings" class="power-list"></div>
+    </section>
 
-      <section id="view-trees" class="view">
-        <div class="page-heading"><div><p class="eyebrow">ASSET LINEAGE</p><h2 class="page-h2">Trade Trees</h2></div><span class="badge">Follow the branches</span></div>
-        <div class="toolbar card"><label><span>Team</span><select id="treeTeamSelect"></select></label><label><span>Starting trade</span><select id="rootTradeSelect"></select></label><div class="toolbar-stat"><span>Branches</span><strong id="branchCount">0</strong></div></div>
-        <div id="treeSummary" class="summary-grid"></div>
-        <div class="card tree-card"><div class="section-title-row"><div><p class="eyebrow">TREE VIEW</p><h3 id="treeTitle">Choose a team</h3></div><span class="badge" id="treeDate"></span></div><div id="treeCanvas" class="tree-canvas"><div class="empty">Trade data is loading.</div></div></div>
-      </section>
+    <section id="view-teams" class="view">
+      <div class="page-heading"><div><p class="eyebrow">CURRENT LEAGUE</p><h2 class="page-h2">Teams</h2></div><span class="badge" id="teamsBadge">— teams</span></div>
+      <div id="teamsGrid" class="teams-grid"></div>
+    </section>
 
-      <section id="view-teams" class="view">
-        <div class="page-heading"><div><p class="eyebrow">CURRENT LEAGUE</p><h2 class="page-h2">Teams</h2></div><span class="badge" id="teamsBadge">— teams</span></div>
-        <div id="teamsGrid" class="teams-grid"></div>
-      </section>
-    </main>
-    <footer><span>All-Beef Dynasty · Sleeper league <span id="footerLeague"></span></span><span>Live public Sleeper data</span></footer>
-  </div>
-  <div id="toast" class="toast"></div>
-  <script src="./config.js"></script><script src="./app.js"></script>
+    <section id="view-trades" class="view">
+      <div class="page-heading"><div><p class="eyebrow">TRANSACTION REPORT CARDS</p><h2 class="page-h2">Trade Grades</h2><p class="muted">Each side is graded from the assets it received using the same explainable player/pick value model.</p></div><span class="badge accent" id="tradesBadge">— trades</span></div>
+      <div class="toolbar card"><label><span>Search</span><input id="tradeSearch" type="search" placeholder="Player, pick, or team…" /></label><label><span>Season</span><select id="seasonFilter"><option value="all">All seasons</option></select></label><div class="toolbar-stat"><span>Showing</span><strong id="tradeResultCount">0</strong></div></div>
+      <div id="tradeList" class="trade-list"></div>
+    </section>
+
+    <section id="view-drafts" class="view">
+      <div class="page-heading"><div><p class="eyebrow">ROOKIE REPORT CARDS</p><h2 class="page-h2">Draft Grades</h2><p class="muted">Outcome/value grades compare each selection to the players available in that draft class and the cost of the pick.</p></div><span class="badge" id="draftCountBadge">— drafts</span></div>
+      <div id="draftSummary" class="summary-grid"></div>
+      <div id="draftsList" class="drafts-list"></div>
+    </section>
+
+    <section id="view-grades" class="view">
+      <div class="page-heading"><div><p class="eyebrow">FRONT OFFICE SCORECARD</p><h2 class="page-h2">Manager Grades</h2><p class="muted">Decision-making and franchise health, not simply current record.</p></div><span class="badge">Explainable grades</span></div>
+      <div class="model-note card"><strong>GM Grade</strong><span>30% roster/power · 25% trades · 20% drafts · 15% historical results · 10% asset management/activity.</span></div>
+      <div id="managerGrades" class="manager-grid"></div>
+    </section>
+
+    <section id="view-awards" class="view">
+      <div class="page-heading"><div><p class="eyebrow">THE ALL-BEEF AWARDS</p><h2 class="page-h2">Manager Awards</h2><p class="muted">League superlatives generated from the same live data model.</p></div><span class="badge accent">No ballots required</span></div>
+      <div id="awardsGrid" class="awards-grid"></div>
+    </section>
+
+    <section id="view-trending" class="view">
+      <div class="page-heading"><div><p class="eyebrow">SLEEPER MARKET</p><h2 class="page-h2">Trending</h2></div><span class="badge">24-hour activity</span></div>
+      <div class="trend-grid"><section class="card panel-pad"><p class="eyebrow green">RISERS</p><h3>Most added</h3><div id="trendingAdds" class="rank-list"></div></section><section class="card panel-pad"><p class="eyebrow red">FALLERS</p><h3>Most dropped</h3><div id="trendingDrops" class="rank-list"></div></section></div>
+    </section>
+
+    <section id="view-trees" class="view">
+      <div class="page-heading"><div><p class="eyebrow">ASSET LINEAGE</p><h2 class="page-h2">Trade Trees</h2></div><span class="badge">V2 tree engine preserved</span></div>
+      <div class="toolbar card"><label><span>Team</span><select id="treeTeamSelect"></select></label><label><span>Starting trade</span><select id="rootTradeSelect"></select></label><div class="toolbar-stat"><span>Branches</span><strong id="branchCount">0</strong></div></div>
+      <div id="treeSummary" class="summary-grid"></div>
+      <div class="card tree-card"><div class="section-title-row"><div><p class="eyebrow">TREE VIEW</p><h3 id="treeTitle">Choose a team</h3></div><span class="badge" id="treeDate"></span></div><div id="treeCanvas" class="tree-canvas"><div class="empty">Trade data is loading.</div></div></div>
+    </section>
+  </main>
+
+  <footer><span>All-Beef Dynasty · Sleeper league <span id="footerLeague"></span></span><span id="dataSourceFooter">Sleeper league + NFL fantasy data</span></footer>
+</div>
+<div id="toast" class="toast"></div>
+<script src="./config.js"></script><script src="./app.js"></script>
 </body>
 </html>
