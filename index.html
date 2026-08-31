@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#0b1020" />
-  <title>Dynasty Trade Tree</title>
+  <meta name="theme-color" content="#0d0906" />
+  <title>All-Beef Dynasty Trade Tree</title>
   <link rel="preconnect" href="https://api.sleeper.app" />
   <link rel="preconnect" href="https://sleepercdn.com" />
   <link rel="stylesheet" href="./styles.css" />
@@ -12,133 +12,71 @@
 <body>
   <div class="shell">
     <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark">TT</div>
-        <div>
-          <div class="eyebrow">SLEEPER DYNASTY</div>
-          <h1 id="leagueName">Dynasty Trade Tree</h1>
-        </div>
-      </div>
-      <div class="header-actions">
-        <span class="status-dot"></span>
-        <span id="syncText">Loading league…</span>
-        <button id="refreshBtn" class="button ghost" type="button">Refresh</button>
-      </div>
+      <button class="brand" data-nav="home">
+        <div class="brand-mark">AB</div>
+        <div><div class="eyebrow">ALL-BEEF DYNASTY</div><h1 id="leagueName">Dynasty Trade Tree</h1></div>
+      </button>
+      <div class="header-actions"><span class="status-dot"></span><span id="syncText">Loading Sleeper…</span><button id="refreshBtn" class="button ghost">Refresh</button></div>
     </header>
 
-    <section id="hero" class="hero">
-      <div>
-        <p class="eyebrow">LEAGUE <span id="leagueIdLabel"></span></p>
-        <h2>Every trade. Every branch. One history.</h2>
-        <p class="muted hero-copy">
-          Follow assets through your dynasty league, inspect every completed trade,
-          and see how a single deal turns into a multi-year trade tree.
-        </p>
-      </div>
-      <div class="hero-badges">
-        <span class="badge" id="seasonBadge">Season —</span>
-        <span class="badge" id="teamsBadge">— teams</span>
-        <span class="badge accent" id="tradesBadge">— trades</span>
-      </div>
-    </section>
-
-    <nav class="tabs" aria-label="Main navigation">
-      <button class="tab active" data-view="trees">Trade Trees</button>
-      <button class="tab" data-view="trades">All Trades</button>
+    <nav class="tabs">
+      <button class="tab active" data-view="home">Home</button>
+      <button class="tab" data-view="trades">Trades</button>
+      <button class="tab" data-view="trending">Trending</button>
+      <button class="tab" data-view="drafts">Drafts</button>
+      <button class="tab" data-view="trees">Trees</button>
       <button class="tab" data-view="teams">Teams</button>
-      <button class="tab" data-view="about">About</button>
     </nav>
 
     <main>
-      <section id="view-trees" class="view active">
-        <div class="toolbar card">
-          <label>
-            <span>Team</span>
-            <select id="treeTeamSelect"></select>
-          </label>
-          <label>
-            <span>Starting trade</span>
-            <select id="rootTradeSelect"></select>
-          </label>
-          <div class="toolbar-stat">
-            <span>Tree branches</span>
-            <strong id="branchCount">0</strong>
+      <section id="view-home" class="view active">
+        <section class="hero card">
+          <div>
+            <p class="eyebrow">LEAGUE <span id="leagueIdLabel"></span></p>
+            <h2>Every deal leaves a trail.</h2>
+            <p class="muted hero-copy">Track trades, draft capital, player movement and the branches created when one dynasty asset becomes another.</p>
+            <div class="hero-actions"><button class="button primary" data-nav="trees">Explore trade trees</button><button class="button" data-nav="trades">Browse all trades</button></div>
           </div>
-        </div>
-
-        <div id="treeSummary" class="summary-grid"></div>
-        <div class="card tree-card">
-          <div class="section-title-row">
-            <div>
-              <p class="eyebrow">ASSET LINEAGE</p>
-              <h3 id="treeTitle">Choose a team</h3>
-            </div>
-            <span class="badge" id="treeDate"></span>
-          </div>
-          <div id="treeCanvas" class="tree-canvas">
-            <div class="empty">Trade data is loading.</div>
-          </div>
+          <div class="hero-logo"><span>ALL</span><strong>BEEF</strong><small>DYNASTY</small></div>
+        </section>
+        <div id="homeStats" class="summary-grid four"></div>
+        <div class="home-grid">
+          <section class="card panel-pad"><div class="section-title-row"><div><p class="eyebrow">LATEST ACTIVITY</p><h3>Recent trades</h3></div><button class="link-button" data-nav="trades">View all</button></div><div id="recentTrades" class="compact-list"></div></section>
+          <section class="card panel-pad"><div class="section-title-row"><div><p class="eyebrow">LEAGUE PULSE</p><h3>Most active teams</h3></div></div><div id="activeTeams" class="compact-list"></div></section>
         </div>
       </section>
 
       <section id="view-trades" class="view">
-        <div class="toolbar card">
-          <label>
-            <span>Search</span>
-            <input id="tradeSearch" type="search" placeholder="Player, pick, or team…" />
-          </label>
-          <label>
-            <span>Season</span>
-            <select id="seasonFilter"><option value="all">All seasons</option></select>
-          </label>
-          <div class="toolbar-stat">
-            <span>Showing</span>
-            <strong id="tradeResultCount">0</strong>
-          </div>
-        </div>
+        <div class="page-heading"><div><p class="eyebrow">TRANSACTION ARCHIVE</p><h2 class="page-h2">Trades</h2></div><span class="badge accent" id="tradesBadge">— trades</span></div>
+        <div class="toolbar card"><label><span>Search</span><input id="tradeSearch" type="search" placeholder="Player, pick, or team…" /></label><label><span>Season</span><select id="seasonFilter"><option value="all">All seasons</option></select></label><div class="toolbar-stat"><span>Showing</span><strong id="tradeResultCount">0</strong></div></div>
         <div id="tradeList" class="trade-list"></div>
       </section>
 
+      <section id="view-trending" class="view">
+        <div class="page-heading"><div><p class="eyebrow">SLEEPER MARKET</p><h2 class="page-h2">Trending</h2></div><span class="badge">24-hour activity</span></div>
+        <div class="trend-grid"><section class="card panel-pad"><p class="eyebrow green">RISERS</p><h3>Most added</h3><div id="trendingAdds" class="rank-list"></div></section><section class="card panel-pad"><p class="eyebrow red">FALLERS</p><h3>Most dropped</h3><div id="trendingDrops" class="rank-list"></div></section></div>
+      </section>
+
+      <section id="view-drafts" class="view">
+        <div class="page-heading"><div><p class="eyebrow">ROOKIE HISTORY</p><h2 class="page-h2">Drafts</h2></div><span class="badge" id="draftCountBadge">— drafts</span></div>
+        <div id="draftsList" class="drafts-list"></div>
+      </section>
+
+      <section id="view-trees" class="view">
+        <div class="page-heading"><div><p class="eyebrow">ASSET LINEAGE</p><h2 class="page-h2">Trade Trees</h2></div><span class="badge">Follow the branches</span></div>
+        <div class="toolbar card"><label><span>Team</span><select id="treeTeamSelect"></select></label><label><span>Starting trade</span><select id="rootTradeSelect"></select></label><div class="toolbar-stat"><span>Branches</span><strong id="branchCount">0</strong></div></div>
+        <div id="treeSummary" class="summary-grid"></div>
+        <div class="card tree-card"><div class="section-title-row"><div><p class="eyebrow">TREE VIEW</p><h3 id="treeTitle">Choose a team</h3></div><span class="badge" id="treeDate"></span></div><div id="treeCanvas" class="tree-canvas"><div class="empty">Trade data is loading.</div></div></div>
+      </section>
+
       <section id="view-teams" class="view">
-        <div class="section-title-row page-title">
-          <div>
-            <p class="eyebrow">CURRENT LEAGUE</p>
-            <h3>Franchises</h3>
-          </div>
-        </div>
+        <div class="page-heading"><div><p class="eyebrow">CURRENT LEAGUE</p><h2 class="page-h2">Teams</h2></div><span class="badge" id="teamsBadge">— teams</span></div>
         <div id="teamsGrid" class="teams-grid"></div>
       </section>
-
-      <section id="view-about" class="view">
-        <div class="card prose">
-          <p class="eyebrow">HOW IT WORKS</p>
-          <h3>Live Sleeper trade history</h3>
-          <p>
-            This site reads public league data from Sleeper in your browser. It follows the
-            league's previous-season chain, loads completed trades, and turns the assets
-            received in a selected deal into a traceable lineage.
-          </p>
-          <p>
-            Player data is cached locally in the browser to reduce calls to Sleeper's larger
-            player directory endpoint. No login or API key is required.
-          </p>
-          <div class="about-grid">
-            <div><strong id="aboutSeasons">—</strong><span>seasons loaded</span></div>
-            <div><strong id="aboutTrades">—</strong><span>completed trades</span></div>
-            <div><strong id="aboutManagers">—</strong><span>current managers</span></div>
-          </div>
-        </div>
-      </section>
     </main>
-
-    <footer>
-      <span>Built for Sleeper league <span id="footerLeague"></span></span>
-      <span>Data refreshes from Sleeper on load</span>
-    </footer>
+    <footer><span>All-Beef Dynasty · Sleeper league <span id="footerLeague"></span></span><span>Live public Sleeper data</span></footer>
   </div>
-
-  <div id="toast" class="toast" role="status"></div>
-  <script src="./config.js"></script>
-  <script src="./app.js"></script>
+  <div id="toast" class="toast"></div>
+  <script src="./config.js"></script><script src="./app.js"></script>
 </body>
 </html>
