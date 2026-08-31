@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#0d0906" />
-  <title>All-Beef Dynasty Hub · V3.1</title>
+  <title>All-Beef Dynasty Hub · V3.2</title>
   <link rel="preconnect" href="https://api.sleeper.app" />
   <link rel="preconnect" href="https://api.sleeper.com" />
   <link rel="preconnect" href="https://sleepercdn.com" />
@@ -17,7 +17,7 @@
       <div class="brand-mark">AB</div>
       <div><div class="eyebrow">ALL-BEEF DYNASTY</div><h1 id="leagueName">Dynasty Hub</h1></div>
     </button>
-    <div class="header-actions"><span class="version-pill">V3.1</span><span class="status-dot"></span><span id="syncText">Loading Sleeper…</span><button id="refreshBtn" class="button ghost">Refresh</button></div>
+    <div class="header-actions"><span class="version-pill">V3.2</span><span class="status-dot"></span><span id="syncText">Loading Sleeper…</span><button id="refreshBtn" class="button ghost">Refresh</button></div>
   </header>
 
   <nav class="tabs">
@@ -69,7 +69,7 @@
     </section>
 
     <section id="view-teams" class="view">
-      <div class="page-heading"><div><p class="eyebrow">CURRENT LEAGUE</p><h2 class="page-h2">Teams</h2></div><span class="badge" id="teamsBadge">— teams</span></div>
+      <div class="page-heading"><div><p class="eyebrow">CURRENT LEAGUE</p><h2 class="page-h2">Teams & Assets</h2><p class="muted">Open any franchise to inspect its full roster, roster status and future draft capital. Tap a player for live 2026 regular-season NFL and fantasy stats.</p></div><span class="badge" id="teamsBadge">— teams</span></div>
       <div id="teamsGrid" class="teams-grid"></div>
     </section>
 
@@ -82,6 +82,11 @@
     <section id="view-drafts" class="view">
       <div class="page-heading"><div><p class="eyebrow">ROOKIE REPORT CARDS</p><h2 class="page-h2">Draft Grades</h2><p class="muted">Outcome/value grades compare each selection to the players available in that draft class and the cost of the pick.</p></div><span class="badge" id="draftCountBadge">— drafts</span></div>
       <div id="draftSummary" class="summary-grid"></div>
+      <div class="toolbar card draft-toolbar">
+        <label><span>Manager</span><select id="draftManagerFilter"><option value="all">All managers</option></select></label>
+        <label><span>Draft year</span><select id="draftYearFilter"><option value="all">All years</option></select></label>
+        <div class="toolbar-stat"><span>Showing</span><strong id="draftResultCount">0</strong></div>
+      </div>
       <div id="draftsList" class="drafts-list"></div>
     </section>
 
@@ -109,7 +114,14 @@
     </section>
   </main>
 
-  <footer><span>All-Beef Dynasty · Sleeper league <span id="footerLeague"></span></span><span><b>V3.1</b> · <span id="dataSourceFooter">Sleeper league + NFL fantasy data</span></span></footer>
+  <footer><span>All-Beef Dynasty · Sleeper league <span id="footerLeague"></span></span><span><b>V3.2</b> · <span id="dataSourceFooter">Sleeper league + NFL fantasy data</span></span></footer>
+</div>
+<div id="playerModal" class="player-modal" aria-hidden="true">
+  <div class="player-modal-backdrop" data-close-player></div>
+  <section class="player-modal-card" role="dialog" aria-modal="true" aria-labelledby="playerModalTitle">
+    <button class="player-modal-close" type="button" data-close-player aria-label="Close player details">×</button>
+    <div id="playerModalContent"><div class="empty">Loading player…</div></div>
+  </section>
 </div>
 <div id="toast" class="toast"></div>
 <script src="./config.js"></script><script src="./app.js"></script>
