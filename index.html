@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#0d0906" />
-  <title>All-Beef Dynasty Hub</title>
+  <title>All-Beef Dynasty Hub · V3.1</title>
   <link rel="preconnect" href="https://api.sleeper.app" />
   <link rel="preconnect" href="https://api.sleeper.com" />
   <link rel="preconnect" href="https://sleepercdn.com" />
@@ -17,7 +17,7 @@
       <div class="brand-mark">AB</div>
       <div><div class="eyebrow">ALL-BEEF DYNASTY</div><h1 id="leagueName">Dynasty Hub</h1></div>
     </button>
-    <div class="header-actions"><span class="status-dot"></span><span id="syncText">Loading Sleeper…</span><button id="refreshBtn" class="button ghost">Refresh</button></div>
+    <div class="header-actions"><span class="version-pill">V3.1</span><span class="status-dot"></span><span id="syncText">Loading Sleeper…</span><button id="refreshBtn" class="button ghost">Refresh</button></div>
   </header>
 
   <nav class="tabs">
@@ -64,7 +64,7 @@
 
     <section id="view-power" class="view">
       <div class="page-heading"><div><p class="eyebrow">LIVE LEAGUE MODEL</p><h2 class="page-h2">Power Rankings</h2><p class="muted">Roster strength + production + dynasty value + depth + future capital.</p></div><span class="badge accent" id="powerDataBadge">Model loading</span></div>
-      <div class="model-note card"><strong>Power Score</strong><span>35% lineup · 20% depth · 20% dynasty value · 15% production · 10% draft capital. All components are normalized within this league.</span></div>
+      <details class="model-note card model-details" open><summary><strong>How Power Score works</strong><span class="summary-hint">Tap to hide</span></summary><p>35% lineup · 20% depth · 20% dynasty value · 15% production · 10% draft capital. All components are normalized within this league. <b>V3 formula preserved.</b></p></details>
       <div id="powerRankings" class="power-list"></div>
     </section>
 
@@ -87,7 +87,7 @@
 
     <section id="view-grades" class="view">
       <div class="page-heading"><div><p class="eyebrow">FRONT OFFICE SCORECARD</p><h2 class="page-h2">Manager Grades</h2><p class="muted">Decision-making and franchise health, not simply current record.</p></div><span class="badge">Explainable grades</span></div>
-      <div class="model-note card"><strong>GM Grade</strong><span>30% roster/power · 25% trades · 20% drafts · 15% historical results · 10% asset management/activity.</span></div>
+      <details class="model-note card model-details" open><summary><strong>How GM Grade works</strong><span class="summary-hint">Tap to hide</span></summary><p>30% roster/power · 25% trades · 20% drafts · 15% historical results · 10% asset management/activity. <b>V3 formula preserved.</b></p></details>
       <div id="managerGrades" class="manager-grid"></div>
     </section>
 
@@ -109,7 +109,7 @@
     </section>
   </main>
 
-  <footer><span>All-Beef Dynasty · Sleeper league <span id="footerLeague"></span></span><span id="dataSourceFooter">Sleeper league + NFL fantasy data</span></footer>
+  <footer><span>All-Beef Dynasty · Sleeper league <span id="footerLeague"></span></span><span><b>V3.1</b> · <span id="dataSourceFooter">Sleeper league + NFL fantasy data</span></span></footer>
 </div>
 <div id="toast" class="toast"></div>
 <script src="./config.js"></script><script src="./app.js"></script>
